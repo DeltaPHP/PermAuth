@@ -1,0 +1,22 @@
+{
+    "name": "deltaphp/perm-auth",
+    "description": "Module for user permanent authentication",
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "orbisnull",
+            "email": "zen4dev@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {
+            "PermAuth": "src/"
+        }
+    },
+    "require": {
+        "deltaphp/deltacore": "dev-master",
+        "deltaphp/deltadb": "dev-master",
+        "deltaphp/user": "dev-master"
+    }
+}
