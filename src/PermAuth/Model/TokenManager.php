@@ -9,9 +9,12 @@ namespace PermAuth\Model;
 use DeltaDb\Repository;
 use User\Model\UserManager;
 use User\Model\User;
+use HttpWarp\Cookie;
 
 class TokenManager extends Repository
 {
+    const COOKIE_NAME = "atoken";
+    const MAX_TIME = 7;
     protected $metaInfo = [
         "perm_auth_tokens" => [
             "class"  => "\\PermAuth\\Model\\Token",
@@ -19,7 +22,7 @@ class TokenManager extends Repository
             "fields" => [
                 "id",
                 "token",
-                "serial",
+                "series",
                 "user",
                 "created",
             ]
@@ -57,6 +60,9 @@ class TokenManager extends Repository
      */
     public function getSeriesManager()
     {
+        if (is_callable($this->seriesManager)) {
+            $this->seriesManager = call_user_func($this->seriesManager);
+        }
         return $this->seriesManager;
     }
 
@@ -74,6 +80,7 @@ class TokenManager extends Repository
         $item = parent::create($data, $entityClass);
         $item->setSeriesManager($this->getSeriesManager());
         $item->setUserManager($this->getUserManager());
+        return $item;
     }
 
     /**
@@ -81,21 +88,63 @@ class TokenManager extends Repository
      */
     public function writeCookie($token)
     {
-
+        Cookie::setCookie(self::COOKIE_NAME, $token->getToken(), time()+60*60*24*7);
     }
 
     /**
-     * @return Token|Null
+     * @return Token|ErrorToken|Null
      */
     public function readCookie()
     {
-
+        $tokenCode = Cookie::getCookie(self::COOKIE_NAME);
+        if (!$tokenCode) {
+            return null;
+        }
+        /** @var Token $token */
+        $token = $this->findOne(["token" => $tokenCode]);
+        if (!$token) {
+            $this->deleteCookie();
+            return null;
+        }
+        $tokenTimeDiff = $token->getCreated()->diff(new \DateTime());
+        if ($tokenTimeDiff->days > self::MAX_TIME) {
+            $this->delete($token);
+            $this->deleteCookie();
+            return false;
+        }
+        return $token;
     }
 
-    public function check($token)
+    public function deleteCookie()
     {
-
+        Cookie::setCookie(self::COOKIE_NAME, "", time() - 3600);
     }
 
+    /**
+     * @param Series $series
+     */
+    public function generateToken($series)
+    {
+        $token = $this->create([
+            "series" => $series,
+            "user" => $series->getUser(),
+            "created" => new \DateTime(),
+            "token" => hash("md5", mt_rand()),
+        ]);
+        $this->save($token);
+        return $token;
+    }
 
-} 
+    /**
+     * @param Series $series
+     * @return bool
+     */
+    public function clearTokens($series)
+    {
+        $tokens = $series->getTokens();
+        foreach($tokens as $token) {
+            $this->delete($token);
+        }
+        return true;
+    }
+}

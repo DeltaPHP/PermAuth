@@ -16,7 +16,6 @@
     },
     "require": {
         "deltaphp/deltacore": "dev-master",
-        "deltaphp/deltadb": "dev-master",
-        "deltaphp/user": "dev-master"
+        "deltaphp/deltadb": "dev-master"
     }
 }

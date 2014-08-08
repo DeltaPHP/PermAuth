@@ -9,6 +9,7 @@ namespace PermAuth\Model;
 use DeltaDb\AbstractEntity;
 use User\Model\User;
 use User\Model\UserManager;
+use DeltaDb\EntityInterface;
 
 class Series extends AbstractEntity
 {
@@ -19,6 +20,8 @@ class Series extends AbstractEntity
 
     /** @var  UserManager */
     protected $userManager;
+    /** @var  TokenManager */
+    protected $tokenManager;
 
     /**
      * @return UserManager
@@ -34,6 +37,22 @@ class Series extends AbstractEntity
     public function setUserManager($userManager)
     {
         $this->userManager = $userManager;
+    }
+
+    /**
+     * @return TokenManager
+     */
+    public function getTokenManager()
+    {
+        return $this->tokenManager;
+    }
+
+    /**
+     * @param TokenManager $tokenManager
+     */
+    public function setTokenManager($tokenManager)
+    {
+        $this->tokenManager = $tokenManager;
     }
 
     /**
@@ -53,10 +72,13 @@ class Series extends AbstractEntity
     }
 
     /**
-     * @return mixed
+     * @return \DateTime
      */
     public function getCreated()
     {
+        if (!empty($this->created) && !$this->created instanceof \DateTime) {
+            $this->created = new \DateTime($this->created);
+        }
         return $this->created;
     }
 
@@ -73,6 +95,9 @@ class Series extends AbstractEntity
      */
     public function getUser()
     {
+        if (!is_null($this->user) && !$this->user instanceof EntityInterface) {
+            $this->user  = $this->getUserManager()->findById($this->user);
+        }
         return $this->user;
     }
 
@@ -82,6 +107,12 @@ class Series extends AbstractEntity
     public function setUser($user)
     {
         $this->user = $user;
+    }
+
+    public function getTokens()
+    {
+        $tm = $this->getTokenManager();
+        return $tm->find(["series" => $this->getId()]);
     }
 
 }

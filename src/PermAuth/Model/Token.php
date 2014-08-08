@@ -7,6 +7,7 @@ namespace PermAuth\Model;
 
 
 use DeltaDb\AbstractEntity;
+use DeltaDb\EntityInterface;
 use User\Model\User;
 use User\Model\UserManager;
 
@@ -56,10 +57,13 @@ class Token extends AbstractEntity
     }
 
     /**
-     * @return mixed
+     * @return Series
      */
     public function getSeries()
     {
+        if (!is_null($this->series) && !$this->series instanceof EntityInterface) {
+            $this->series = $this->getSeriesManager()->findById($this->series);
+        }
         return $this->series;
     }
 
@@ -72,10 +76,13 @@ class Token extends AbstractEntity
     }
 
     /**
-     * @return mixed
+     * @return \DateTime
      */
     public function getCreated()
     {
+        if (!empty($this->created) && !$this->created instanceof \DateTime) {
+            $this->created = new \DateTime($this->created);
+        }
         return $this->created;
     }
 
@@ -108,6 +115,9 @@ class Token extends AbstractEntity
      */
     public function getUser()
     {
+        if (!is_null($this->user) && !$this->user instanceof EntityInterface) {
+            $this->user  = $this->getUserManager()->findById($this->user);
+        }
         return $this->user;
     }
 
