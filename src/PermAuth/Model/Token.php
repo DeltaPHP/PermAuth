@@ -6,12 +6,12 @@
 namespace PermAuth\Model;
 
 
-use DeltaDb\AbstractEntity;
+use DeltaCore\Prototype\AbstractEntity;
 use DeltaDb\EntityInterface;
 use User\Model\User;
 use User\Model\UserManager;
 
-class Token extends AbstractEntity
+class Token extends AbstractEntity implements EntityInterface
 {
     /** @var  User */
     protected $user;
