@@ -16,17 +16,14 @@ class TokenManager extends Repository
     const COOKIE_NAME = "atoken";
     const MAX_TIME = 7;
     protected $metaInfo = [
-        "perm_auth_tokens" => [
-            "class"  => "\\PermAuth\\Model\\Token",
-            "id"     => "id",
-            "fields" => [
-                "id",
-                "token",
-                "series",
-                "user",
-                "created",
-            ]
-        ],
+        "table" => "perm_auth_tokens",
+        "fields" => [
+            "id",
+            "token",
+            "series",
+            "user",
+            "created",
+        ]
     ];
 
     /** @var  User */

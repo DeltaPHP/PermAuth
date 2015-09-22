@@ -17,16 +17,14 @@ class SeriesManager extends Repository
     const COOKIE_NAME = "paseries";
 
     protected $metaInfo = [
-        "perm_auth_series" => [
-            "class"  => "\\PermAuth\\Model\\Series",
-            "id"     => "id",
-            "fields" => [
-                "id",
-                "series",
-                "user",
-                "created"
-            ]
-        ],
+        "table" => "perm_auth_series",
+        "class" => "\\PermAuth\\Model\\Series",
+        "fields" => [
+            "id",
+            "series",
+            "user",
+            "created"
+        ]
     ];
 
     /** @var  User */
